@@ -79,6 +79,7 @@ struct mCheatSet {
 
 	char* name;
 	bool enabled;
+	bool savedToggle;
 	struct mCheatPatchList romPatches;
 	struct StringList lines;
 };
@@ -95,6 +96,7 @@ struct mCheatDevice {
 	struct Table unpatchedMemory;
 	bool autosave;
 	bool buttonDown;
+	bool resetSaved;
 };
 
 struct VFile;
@@ -124,7 +126,7 @@ void mCheatAutosave(struct mCheatDevice*);
 
 void mCheatRefresh(struct mCheatDevice*, struct mCheatSet*);
 void mCheatPressButton(struct mCheatDevice*, bool down);
-void mCheatDisableAll(struct mCheatDevice*);
+void mCheatToggle(struct mCheatDevice*);
 
 CXX_GUARD_END
 

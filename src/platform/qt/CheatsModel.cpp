@@ -73,6 +73,7 @@ bool CheatsModel::setData(const QModelIndex& index, const QVariant& value, int r
 		return true;
 	case Qt::CheckStateRole:
 		cheats->enabled = value == Qt::Checked;
+		m_device->resetSaved = value == Qt::Checked;
 		mCheatAutosave(m_device);
 		emit dataChanged(index, index);
 		return true;

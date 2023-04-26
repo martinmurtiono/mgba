@@ -203,6 +203,7 @@ void mCheatSetInit(struct mCheatSet* set, const char* name) {
 		set->name = 0;
 	}
 	set->enabled = true;
+	set->savedToggle = false;
 }
 
 void mCheatSetDeinit(struct mCheatSet* set) {
@@ -803,13 +804,29 @@ void mCheatDeviceDeinit(struct mCPUComponent* component) {
 	}
 }
 
-void mCheatDisableAll(struct mCheatDevice* device) {
+void mCheatToggle(struct mCheatDevice* device) {
 	size_t i;
+	bool cheatsDisabled = true;
 	for (i = 0; i < mCheatSetsSize(&device->cheats); ++i) {
 		struct mCheatSet* cheat = *mCheatSetsGetPointer(&device->cheats, i);
 		if (cheat->enabled) {
 			_unpatchROM(device, cheat);
 			cheat->enabled = false;
+			cheat->savedToggle = true;
+			cheatsDisabled = false;
+		} else if (device->resetSaved) {
+			cheat->savedToggle = false;
+		}
+	}
+	device->resetSaved = false;
+	if (cheatsDisabled) {
+		for (i = 0; i < mCheatSetsSize(&device->cheats); ++i) {
+			struct mCheatSet* cheat = *mCheatSetsGetPointer(&device->cheats, i);
+			if (cheat->savedToggle) {
+				_patchROM(device, cheat);
+				cheat->enabled = true;
+				cheat->savedToggle = false;
+			}
 		}
 	}
 }
